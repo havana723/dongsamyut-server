@@ -1,4 +1,5 @@
 import bodyParser from "body-parser";
+import cors from "cors";
 import express from "express";
 import { History } from "src/types/history";
 
@@ -7,6 +8,11 @@ const fs = require("fs");
 const port = process.env.PORT ?? 3001;
 
 app.use(bodyParser.json());
+app.use(
+  cors({
+    origin: "*",
+  })
+);
 
 app.get("/api/howmany", (req, res) => {
   const logs = JSON.parse(
