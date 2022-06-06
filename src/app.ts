@@ -1,7 +1,10 @@
 import bodyParser from "body-parser";
 import cors from "cors";
+import dotenv from "dotenv";
 import express from "express";
 import { History } from "src/types/history";
+
+dotenv.config();
 
 const app = express();
 const fs = require("fs");
