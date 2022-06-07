@@ -10,9 +10,22 @@ import config from "./config";
 const app = express();
 
 const { expressjwt } = require("express-jwt");
+const { constants } = require("fs");
 const fs = require("fs/promises");
 const jwt = require('jsonwebtoken');
 const port = process.env.PORT ?? 3001;
+
+const logFilePath = __dirname + "/log.txt";
+
+
+;(async () => {
+  try {
+    await fs.access(logFilePath, constants.F_OK);
+  } catch (err) {
+    console.error(err);
+    await fs.writeFile(logFilePath, "[]");
+  }
+})();
 
 app.use(bodyParser.json());
 app.use(
@@ -23,14 +36,14 @@ app.use(
 
 app.get("/api/howmany", async (req, res) => {
   const logs = JSON.parse(
-    await fs.readFile(__dirname + "/log.txt", "utf8")
+    await fs.readFile(logFilePath, "utf8")
   ) as History[];
   res.send({ cnt: logs[logs.length - 1].cnt });
 });
 
 app.get("/api/lastupdate", async (req, res) => {
   const logs = JSON.parse(
-    await fs.readFile(__dirname + "/log.txt", "utf8")
+    await fs.readFile(logFilePath, "utf8")
   ) as History[];
   res.send({ update: logs[logs.length - 1].update });
 });
@@ -52,7 +65,7 @@ app.post("/api/history",
   expressjwt({ secret: config.jwtSecret, algorithms: ["HS256"] }),
   async (req, res) => {
   const logs = JSON.parse(
-    await fs.readFile(__dirname + "/log.txt")
+    await fs.readFile(logFilePath)
   ) as History[];
 
   const history: History = {
@@ -62,7 +75,7 @@ app.post("/api/history",
 
   logs.push(history);
 
-  await fs.writeFile(__dirname + "/log.txt", JSON.stringify(logs));
+  await fs.writeFile(logFilePath, JSON.stringify(logs));
 
   res.sendStatus(201);
 });
