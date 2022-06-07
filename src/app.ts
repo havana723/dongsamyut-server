@@ -1,13 +1,17 @@
-import bodyParser from "body-parser";
-import cors from "cors";
 import dotenv from "dotenv";
-import express from "express";
-import { History } from "src/types/history";
-
 dotenv.config();
 
+import bodyParser from "body-parser";
+import cors from "cors";
+import express from "express";
+import { History } from "src/types/history";
+import config from "./config";
+
 const app = express();
+
+const { expressjwt } = require("express-jwt");
 const fs = require("fs/promises");
+const jwt = require('jsonwebtoken');
 const port = process.env.PORT ?? 3001;
 
 app.use(bodyParser.json());
@@ -31,7 +35,22 @@ app.get("/api/lastupdate", async (req, res) => {
   res.send({ update: logs[logs.length - 1].update });
 });
 
-app.post("/api/history", async (req, res) => {
+app.get("/api/auth", async (req, res) => {
+  const clientRemoteIP = req.headers["X-Forwarded-For"] ?? req.ip;
+
+  if (clientRemoteIP === config.dongbangIPAddress) {
+    res.send({
+      token: jwt.sign({ kuaaa: 'kuaaa' }, config.jwtSecret),
+    });
+  } else {
+    res.sendStatus(401);
+  }
+
+});
+
+app.post("/api/history",
+  expressjwt({ secret: config.jwtSecret, algorithms: ["HS256"] }),
+  async (req, res) => {
   const logs = JSON.parse(
     await fs.readFile(__dirname + "/log.txt").toString()
   ) as History[];
