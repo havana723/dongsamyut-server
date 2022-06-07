@@ -49,9 +49,9 @@ app.get("/api/lastupdate", async (req, res) => {
 });
 
 app.get("/api/auth", async (req, res) => {
-  const clientRemoteIP = req.headers["X-Forwarded-For"] ?? req.ip;
+  const clientRemoteIP = (req.headers["x-forwarded-for"] ?? req.ip) as string;
 
-  if (clientRemoteIP === config.dongbangIPAddress) {
+  if (config.dongbangIPAddresses.includes(clientRemoteIP)) {
     res.send({
       token: jwt.sign({ kuaaa: 'kuaaa' }, config.jwtSecret),
     });
