@@ -64,7 +64,7 @@ app.post("/api/history",
 
   await fs.writeFile(__dirname + "/log.txt", JSON.stringify(logs));
 
-  res.send(201);
+  res.sendStatus(201);
 });
 
 app.listen(port, () => {
