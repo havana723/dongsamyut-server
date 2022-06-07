@@ -52,7 +52,7 @@ app.post("/api/history",
   expressjwt({ secret: config.jwtSecret, algorithms: ["HS256"] }),
   async (req, res) => {
   const logs = JSON.parse(
-    await fs.readFile(__dirname + "/log.txt").toString()
+    await fs.readFile(__dirname + "/log.txt")
   ) as History[];
 
   const history: History = {
