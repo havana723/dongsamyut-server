@@ -23,14 +23,14 @@ app.use(
 
 app.get("/api/howmany", async (req, res) => {
   const logs = JSON.parse(
-    await fs.readFile(__dirname + "/log.txt").toString()
+    await fs.readFile(__dirname + "/log.txt", "utf8")
   ) as History[];
   res.send({ cnt: logs[logs.length - 1].cnt });
 });
 
 app.get("/api/lastupdate", async (req, res) => {
   const logs = JSON.parse(
-    await fs.readFile(__dirname + "/log.txt").toString()
+    await fs.readFile(__dirname + "/log.txt", "utf8")
   ) as History[];
   res.send({ update: logs[logs.length - 1].update });
 });
