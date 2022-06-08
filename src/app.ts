@@ -64,12 +64,19 @@ app.get("/api/auth", async (req, res) => {
 app.post("/api/history",
   expressjwt({ secret: config.jwtSecret, algorithms: ["HS256"] }),
   async (req, res) => {
+
+  const cnt = Number(req.body.cnt);
+
+  if (Number.isNaN(cnt) || !Number.isFinite(cnt) || !Number.isInteger(cnt) || cnt < 0) {
+    return res.sendStatus(400);
+  }
+
   const logs = JSON.parse(
     await fs.readFile(logFilePath)
   ) as History[];
 
   const history: History = {
-    cnt: req.body.cnt,
+    cnt,
     update: new Date(),
   };
 
